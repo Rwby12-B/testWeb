@@ -1,75 +1,1030 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Happy Birthday Multi-Screen</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins', sans-serif; }
-    body { height:100vh; overflow:hidden; background: linear-gradient(135deg, #0a0014, #140024, #1f0033, #2a0044); color:white; position: relative; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Birthday Gift 💜</title>
 
-    .screen { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; transition: opacity 1s ease; }
-    .screen.hidden { opacity:0; pointer-events:none; }
+<style>
+  :root{
+    --bg: linear-gradient(135deg, #090017, #2b0a57, #5a189a);
+    --aur1: rgba(255,214,255,.18);
+    --aur2: rgba(199,125,255,.16);
+    --aur3: rgba(255,205,118,.10);
 
-    .card { padding:40px 60px; border-radius:25px; background: rgba(255,255,255,0.06); backdrop-filter: blur(25px); border:1px solid rgba(255,255,255,0.12); box-shadow:0 10px 50px rgba(0,0,0,0.6); text-align:center; }
-    h1 { font-size:3rem; font-weight:600; margin-bottom:10px; background: linear-gradient(90deg, #d8b4fe, #f5d0fe); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-    p { font-weight:300; font-size:1.2rem; opacity:0.85; }
-    .button { margin-top:25px; padding:12px 30px; border-radius:50px; border:none; background:linear-gradient(90deg,#c084fc,#e879f9); color:white; font-weight:600; cursor:pointer; transition: all 0.3s ease; }
-    .button:hover { transform: scale(1.08); box-shadow:0 0 25px rgba(216,180,254,0.6); }
+    --text: rgba(255,255,255,.92);
+    --muted: rgba(255,255,255,.75);
+    --stroke: rgba(255,255,255,.18);
+    --card1: rgba(255,255,255,.10);
+    --card2: rgba(255,255,255,.06);
+    --btnText: #220a3f;
+  }
 
-    /* snow */
-    .snow { position:fixed; color:white; user-select:none; pointer-events:none; animation-name: snowfall; animation-timing-function: linear; animation-iteration-count: infinite; }
-    @keyframes snowfall { from { transform: translateY(-10vh) rotate(0deg); opacity:0; } 10% { opacity:1; } to { transform: translateY(110vh) rotate(360deg); opacity:0; } }
+  body.light{
+    --text: rgba(18,18,25,.92);
+    --muted: rgba(18,18,25,.70);
+    --stroke: rgba(0,0,0,.14);
+    --card1: rgba(255,255,255,.62);
+    --card2: rgba(255,255,255,.40);
+    --btnText: #1b0b3a;
+  }
 
-    .memory { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
-    .memory h2 { font-size:2.5rem; margin-bottom:15px; }
-    .memory img { width:200px; border-radius:15px; margin:10px; transition: transform 0.3s ease; }
-    .memory img:hover { transform: scale(1.1); }
-  </style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial;}
+  body{
+    height:100vh;
+    overflow:hidden;
+    color:var(--text);
+    background: var(--bg);
+  }
+
+  /* BG layers */
+  .bg-layer{position:fixed; inset:0; pointer-events:none;}
+  canvas#starCanvas{width:100%;height:100%;}
+
+  .aurora{
+    position:absolute; inset:-25%;
+    filter: blur(26px);
+    opacity: .9;
+    mix-blend-mode: screen;
+  }
+  body.light .aurora{opacity:.45; mix-blend-mode: multiply;}
+
+  .blob{
+    position:absolute; border-radius:999px;
+    animation: drift 18s ease-in-out infinite;
+  }
+  .blob.b1{
+    width:560px;height:560px; left:-180px; top:-160px;
+    background: radial-gradient(circle at 30% 30%, var(--aur1), rgba(255,255,255,0) 70%);
+  }
+  .blob.b2{
+    width:720px;height:720px; right:-260px; top:0%;
+    background: radial-gradient(circle at 35% 35%, var(--aur2), rgba(255,255,255,0) 72%);
+    animation-duration: 22s;
+  }
+  .blob.b3{
+    width:820px;height:820px; left:10%; bottom:-340px;
+    background: radial-gradient(circle at 40% 40%, var(--aur3), rgba(255,255,255,0) 72%);
+    animation-duration: 26s;
+  }
+  @keyframes drift{
+    0%{transform: translate(-90px,-50px) scale(1);}
+    50%{transform: translate(90px,70px) scale(1.06);}
+    100%{transform: translate(-90px,-50px) scale(1);}
+  }
+
+  /* Rain */
+  .rain{position:fixed; inset:0; pointer-events:none; overflow:hidden;}
+  .drop{
+    position:absolute; top:-12%;
+    opacity:.88;
+    filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
+    animation: fall linear forwards;
+    will-change: transform;
+  }
+  @keyframes fall{
+    to{ transform: translate3d(var(--dx), 120vh, 0) rotate(var(--rot)); opacity:.95; }
+  }
+
+  /* App shell */
+  .app{position:relative;height:100%;display:grid;place-items:center;padding:22px;}
+  .shell{
+    width:min(980px, 94vw);
+    height:min(720px, 92vh);
+    border:1px solid var(--stroke);
+    border-radius: 28px;
+    background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+    box-shadow: 0 20px 80px rgba(0,0,0,.35);
+    backdrop-filter: blur(10px);
+    overflow:hidden;
+  }
+  body.light .shell{
+    background: linear-gradient(180deg, rgba(255,255,255,.60), rgba(255,255,255,.38));
+    box-shadow: 0 18px 60px rgba(0,0,0,.18);
+  }
+
+  .topbar{
+    height:58px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+    background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0));
+  }
+  body.light .topbar{border-bottom:1px solid rgba(0,0,0,.08);}
+
+  .brand{display:flex; gap:12px; align-items:center;}
+  .dotset{display:flex; gap:8px;}
+  .dot{width:12px;height:12px;border-radius:999px;background:rgba(255,255,255,.18)}
+  .dot:nth-child(1){background:rgba(255,214,255,.55)}
+  .dot:nth-child(2){background:rgba(199,125,255,.55)}
+  .dot:nth-child(3){background:rgba(255,205,118,.52)}
+  .brand h3{font-size:14px; letter-spacing:.6px; text-transform:uppercase; color:var(--muted)}
+  .tiny{font-size:12px;color:var(--muted)}
+
+  .rightbar{
+    display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+  }
+  .select, .toggle{
+    border:1px solid rgba(255,255,255,.18);
+    background: rgba(255,255,255,.08);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 12px;
+    outline:none;
+    cursor:pointer;
+    transition:.18s ease;
+  }
+  body.light .select, body.light .toggle{
+    border:1px solid rgba(0,0,0,.12);
+    background: rgba(255,255,255,.55);
+    color: rgba(18,18,25,.92);
+  }
+  .toggle:hover{transform: translateY(-1px); background: rgba(255,255,255,.12);}
+
+  /* Scroll viewport */
+  .viewport{
+    height: calc(100% - 58px);
+    overflow:auto;
+    padding: 18px;
+  }
+  .viewport::-webkit-scrollbar{width:10px}
+  .viewport::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18); border-radius:999px}
+  body.light .viewport::-webkit-scrollbar-thumb{background:rgba(0,0,0,.18)}
+  .viewport::-webkit-scrollbar-track{background:transparent}
+
+  /* Screens */
+  .screen{
+    display:none;
+    grid-template-columns: 1.12fr .88fr;
+    gap: 18px;
+    align-content:start;
+    min-height: 100%;
+  }
+  .screen.active{display:grid;}
+  @media (max-width: 820px){
+    .screen{grid-template-columns:1fr;}
+    body{overflow:auto;}
+    .shell{height:auto;}
+  }
+
+  .card{
+    border:1px solid rgba(255,255,255,.14);
+    background: linear-gradient(180deg, var(--card1), var(--card2));
+    border-radius: 22px;
+    padding: 18px;
+    box-shadow: 0 10px 40px rgba(0,0,0,.22);
+  }
+  body.light .card{
+    border:1px solid rgba(0,0,0,.10);
+    box-shadow: 0 10px 30px rgba(0,0,0,.12);
+  }
+
+  .title{font-size: clamp(28px, 4vw, 46px); line-height:1.05; margin-bottom: 10px;}
+  .subtitle{color:var(--muted); font-size: 15px; line-height:1.6; margin-bottom: 14px;}
+  .cta{display:flex; gap:12px; flex-wrap:wrap; align-items:center;}
+
+  .cute-btn{
+    border:none;
+    background: linear-gradient(135deg, #ffd6ff, #c77dff);
+    color: var(--btnText);
+    padding: 14px 18px;
+    border-radius: 999px;
+    font-weight: 850;
+    cursor:pointer;
+    position:relative;
+    box-shadow: 0 12px 30px rgba(199,125,255,.25);
+    transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    overflow:hidden;
+  }
+  .cute-btn::before{
+    content:"";
+    position:absolute; inset:-40%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.75), rgba(255,255,255,0) 55%);
+    transform: translate(-30%, -10%) rotate(18deg);
+    opacity:.55;
+  }
+  .cute-btn:hover{transform: translateY(-2px) scale(1.02); box-shadow: 0 18px 46px rgba(255,214,255,.22); filter:saturate(1.05);}
+  .cute-btn:active{transform: translateY(0) scale(.99);}
+  .spark{display:inline-block; margin-left:8px; animation: wiggle 1.6s ease-in-out infinite;}
+  @keyframes wiggle{0%,100%{transform:rotate(0) translateY(0)}50%{transform:rotate(10deg) translateY(-2px)}}
+
+  .ghost-btn{
+    border:1px solid rgba(255,255,255,.20);
+    background: rgba(255,255,255,.08);
+    color: var(--text);
+    padding: 13px 16px;
+    border-radius: 999px;
+    cursor:pointer;
+    transition: .18s ease;
+  }
+  body.light .ghost-btn{border:1px solid rgba(0,0,0,.12); background: rgba(255,255,255,.55);}
+  .ghost-btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.12);}
+
+  .meter{height:10px;border-radius:999px;background: rgba(255,255,255,.10);overflow:hidden;border:1px solid rgba(255,255,255,.10);}
+  body.light .meter{border:1px solid rgba(0,0,0,.10); background: rgba(0,0,0,.06);}
+  .meter>div{height:100%;width:0%;background: linear-gradient(90deg, rgba(255,214,255,.9), rgba(199,125,255,.9));transition: width .7s ease;}
+
+  .controls{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  input[type="range"]{accent-color:#ffd6ff;width:140px;}
+
+  .mem-list{display:grid; gap:12px; margin-top:10px;}
+  .mem{
+    padding:14px;border-radius:18px;
+    border:1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.08);
+    transition: transform .18s ease, background .18s ease;
+  }
+  body.light .mem{border:1px solid rgba(0,0,0,.10); background: rgba(255,255,255,.55);}
+  .mem:hover{transform:translateY(-2px); background: rgba(255,255,255,.12);}
+  body.light .mem:hover{background: rgba(255,255,255,.70);}
+  .mem b{display:block;margin-bottom:6px;}
+  .mem p{color:var(--muted); line-height:1.55; font-size:14px;}
+
+  /* puzzle/game */
+  .wrap{
+    margin-top:12px;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.07);
+    overflow:hidden;
+  }
+  body.light .wrap{border:1px solid rgba(0,0,0,.10); background: rgba(255,255,255,.55);}
+  .head{
+    padding:12px 14px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    border-bottom:1px solid rgba(255,255,255,.10);
+  }
+  body.light .head{border-bottom:1px solid rgba(0,0,0,.08);}
+  .badge{
+    padding:8px 10px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.06);
+    font-size:12px;
+    color: var(--muted);
+  }
+  body.light .badge{border:1px solid rgba(0,0,0,.10); background: rgba(255,255,255,.55);}
+
+  .hint{padding:12px 14px; color:var(--muted); font-size:13px; line-height:1.5;}
+
+  .game-area{
+    position:relative;
+    height:190px;
+    background: radial-gradient(100% 120% at 30% 20%, rgba(255,255,255,.09), transparent 60%);
+  }
+  body.light .game-area{background: radial-gradient(100% 120% at 30% 20%, rgba(0,0,0,.06), transparent 60%);}
+
+  .target{
+    position:absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 34px;
+    cursor:pointer;
+    user-select:none;
+    filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
+    transition: transform .08s ease;
+  }
+  .target:active{transform: translate(-50%,-50%) scale(.95);}
+</style>
 </head>
+
 <body>
-
-  <div class="screen" id="mainScreen">
-    <div class="card">
-      <h1>Happy Birthday</h1>
-      <p>Wishing you all the best!</p>
-      <button class="button" onclick="goToMemory()">Open Gift</button>
+  <div class="bg-layer">
+    <div class="aurora">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="blob b3"></div>
     </div>
+    <canvas id="starCanvas"></canvas>
   </div>
 
-  <div class="screen hidden" id="memoryScreen">
-    <div class="memory">
-      <h2>Memories</h2>
-      <div>
-        <img src="https://via.placeholder.com/200x150.png?text=Memory+1" alt="Memory1">
-        <img src="https://via.placeholder.com/200x150.png?text=Memory+2" alt="Memory2">
-        <img src="https://via.placeholder.com/200x150.png?text=Memory+3" alt="Memory3">
+  <div class="rain" id="rain"></div>
+
+  <div class="app">
+    <div class="shell">
+      <div class="topbar">
+        <div class="brand">
+          <div class="dotset" aria-hidden="true">
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          </div>
+          <div>
+            <h3 id="ui_brandTitle">Birthday Gift Mode</h3>
+            <div class="tiny" id="ui_status">Pick a theme, press buttons, be silly ✨</div>
+          </div>
+        </div>
+
+        <div class="rightbar">
+          <select class="select" id="langSelect" title="Language">
+            <option value="mn">Монгол</option>
+            <option value="en">English</option>
+            <option value="jp">日本語</option>
+          </select>
+
+          <select class="select" id="themeSelect" title="Theme">
+            <option value="dark">Dark gradient</option>
+            <option value="gray">Gray gradient</option>
+            <option value="nightblue">Night blue gradient</option>
+            <option value="purple">Dark purple gradient</option>
+            <option value="blood">Dark blood red gradient</option>
+          </select>
+
+          <button class="toggle" id="modeToggle">🌙 Dark</button>
+        </div>
       </div>
-      <p>Remember all our amazing moments together! 💖</p>
+
+      <div class="viewport" id="viewport">
+        <!-- MAIN -->
+        <div class="screen active" id="mainScreen">
+          <div class="card">
+            <div class="title" id="ui_mainTitle">Happy Birthday 💜</div>
+            <div class="subtitle" id="ui_mainSub">
+              Welcome to the Purple Galaxy of Good Vibes™.<br/>
+              Enjoy the falling cake physics and totally-not-overpowered sparkle tech.
+            </div>
+
+            <div class="cta">
+              <button class="cute-btn" id="openBtn">
+                <span id="ui_openMem">Open Memories</span> <span class="spark">✨</span>
+              </button>
+              <button class="ghost-btn" id="sparkBtn"><span id="ui_moreSpark">More Sparkles ✨</span></button>
+            </div>
+
+            <div style="height:14px"></div>
+
+            <div class="card" style="padding:14px;border-radius:18px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+                <div>
+                  <b style="display:block;margin-bottom:6px;" id="ui_moodTitle">Mood Meter</b>
+                  <div class="tiny" id="ui_moodSub">Warning: too much sparkle may cause smiling.</div>
+                </div>
+                <div class="tiny" id="meterLabel">0%</div>
+              </div>
+              <div style="height:10px"></div>
+              <div class="meter"><div id="meterBar"></div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <b style="display:block;margin-bottom:10px;" id="ui_controlsTitle">Controls</b>
+
+            <div class="controls" style="margin-bottom:10px;">
+              <button class="toggle" id="musicToggle">🎧 Music: OFF</button>
+              <label class="tiny" id="ui_volLabel">Volume</label>
+              <input id="vol" type="range" min="0" max="100" value="35" />
+              <button class="toggle" id="rainToggle">🎂🎁 Rain: ON</button>
+            </div>
+
+            <div class="tiny" id="ui_bugNote">
+              Rain bug fixed: tab сольж буцаад ирэхэд нэг мөчид бөөнөөрөө асгарахгүй.
+            </div>
+          </div>
+        </div>
+
+        <!-- MEMORY -->
+        <div class="screen" id="memoryScreen">
+          <div class="card">
+            <div class="title" id="ui_memTitle">Memory Zone 🌸</div>
+            <div class="subtitle" id="ui_memSub">
+              Here we store memories like precious snacks: carefully, dramatically, lovingly.
+            </div>
+
+            <div class="mem-list" id="memList">
+              <div class="mem">
+                <b id="ui_m1t">🌙 Midnight vibes</b>
+                <p id="ui_m1d">Quiet talks, sleepy laughs, and that “everything is fine” feeling.</p>
+              </div>
+              <div class="mem">
+                <b id="ui_m2t">🎮 Game & giggles</b>
+                <p id="ui_m2d">Even random moments turned into legendary memories ✨</p>
+              </div>
+              <div class="mem">
+                <b id="ui_m3t">🎂 Birthday wish</b>
+                <p id="ui_m3d">May this year be warm, lucky, and a little magical 💜</p>
+              </div>
+            </div>
+
+            <!-- EASY PUZZLE -->
+            <div class="wrap" style="margin-top:14px;">
+              <div class="head">
+                <b id="ui_puzzleTitle">🧩 Tiny Puzzle (Easy)</b>
+                <span class="badge" id="puzzleStatus">Locked</span>
+              </div>
+              <div class="hint">
+                <div id="ui_puzzleText">Pick the correct button to unlock a silly compliment. Or just hit Reveal 😼</div>
+                <div style="height:10px"></div>
+                <div class="controls">
+                  <button class="toggle" id="p1">🪐 Cosmic Potato</button>
+                  <button class="toggle" id="p2">💜 Purple</button>
+                  <button class="toggle" id="p3">🦖 Tiny Dino</button>
+                  <button class="toggle" id="pReveal">Reveal</button>
+                </div>
+                <div style="height:10px"></div>
+                <div class="tiny" id="puzzleMsg">Pick wisely… or go Reveal like a boss.</div>
+                <div class="tiny" id="puzzleReward" style="margin-top:8px; display:none;">
+                  ✅ Unlocked: You’re basically a walking comfort spell. (Very OP.) 💜
+                </div>
+              </div>
+            </div>
+
+            <div style="height:14px"></div>
+            <div class="cta">
+              <button class="cute-btn" id="backBtn"><span id="ui_back">Back</span> <span class="spark">💜</span></button>
+              <button class="ghost-btn" id="addMemBtn"><span id="ui_addMem">Add a Memory ➕</span></button>
+            </div>
+          </div>
+
+          <div class="card">
+            <b style="display:block;margin-bottom:10px;" id="ui_gameTitle">Mini Game + Music</b>
+            <div class="subtitle" style="margin-bottom:10px;" id="ui_gameSub">
+              🎯 Catch the star! 20 seconds. Click fast. Be the chosen one.
+            </div>
+
+            <div class="wrap">
+              <div class="head">
+                <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                  <span class="badge"><span id="ui_score">Score</span>: <b id="score">0</b></span>
+                  <span class="badge"><span id="ui_time">Time</span>: <b id="time">20</b>s</span>
+                  <span class="badge"><span id="ui_best">Best</span>: <b id="best">0</b></span>
+                </div>
+                <button class="toggle" id="startGame"><span id="ui_start">▶ Start</span></button>
+              </div>
+              <div class="game-area" id="gameArea">
+                <div class="target" id="target" title="click me">⭐</div>
+              </div>
+              <div class="hint" id="gameHint">Press Start, then click ⭐. It runs away because it’s shy 😼</div>
+            </div>
+
+            <div style="height:12px"></div>
+
+            <div class="card" style="padding:14px;border-radius:18px;">
+              <div class="controls">
+                <button class="toggle" id="musicToggle2">🎧 Music: OFF</button>
+                <label class="tiny" id="ui_volLabel2">Volume</label>
+                <input id="vol2" type="range" min="0" max="100" value="35" />
+              </div>
+              <div style="height:10px"></div>
+              <div class="tiny" id="musicHint">Tap Music to start. (Browsers block autoplay)</div>
+            </div>
+          </div>
+        </div>
+      </div><!-- viewport -->
     </div>
   </div>
 
-  <script>
-    // snow + cakes
-    const items = ["❄", "❄", "❄", "🎂", "🧁"];
-    for (let i=0;i<60;i++){
-      const snow=document.createElement('div');
-      snow.className='snow';
-      snow.innerHTML=items[Math.floor(Math.random()*items.length)];
-      snow.style.left=Math.random()*100+'vw';
-      snow.style.top='-10vh';
-      snow.style.fontSize=(Math.random()*20+10)+'px';
-      snow.style.animationDuration=(Math.random()*10+10)+'s';
-      snow.style.animationDelay=Math.random()*5+'s';
-      document.body.appendChild(snow);
-    }
+<script>
+(() => {
+  // ---------- helpers ----------
+  const $ = (id) => document.getElementById(id);
 
-    function goToMemory(){
-      document.getElementById('mainScreen').classList.add('hidden');
-      document.getElementById('memoryScreen').classList.remove('hidden');
+  // ---------- i18n ----------
+  const I18N = {
+    en: {
+      brandTitle: "Birthday Gift Mode",
+      status: "Pick a theme, press buttons, be silly ✨",
+      mainTitle: "Happy Birthday 💜",
+      mainSub: "Welcome to the Purple Galaxy of Good Vibes™.<br/>Enjoy the falling cake physics and totally-not-overpowered sparkle tech.",
+      openMem: "Open Memories",
+      moreSpark: "More Sparkles ✨",
+      moodTitle: "Mood Meter",
+      moodSub: "Warning: too much sparkle may cause smiling.",
+      controlsTitle: "Controls",
+      vol: "Volume",
+      rainOn: "🎂🎁 Rain: ON",
+      rainOff: "🎂🎁 Rain: OFF",
+      bugNote: "Rain bug fixed: switching tabs won’t cause a cake tsunami later.",
+      memTitle: "Memory Zone 🌸",
+      memSub: "Here we store memories like precious snacks: carefully, dramatically, lovingly.",
+      m1t: "🌙 Midnight vibes",
+      m1d: "Quiet talks, sleepy laughs, and that “everything is fine” feeling.",
+      m2t: "🎮 Game & giggles",
+      m2d: "Even random moments turned into legendary memories ✨",
+      m3t: "🎂 Birthday wish",
+      m3d: "May this year be warm, lucky, and a little magical 💜",
+      puzzleTitle: "🧩 Tiny Puzzle (Easy)",
+      puzzleText: "Pick the correct button to unlock a silly compliment. Or just hit Reveal 😼",
+      locked: "Locked",
+      unlocked: "Unlocked",
+      puzzleMsg: "Pick wisely… or go Reveal like a boss.",
+      reward: "✅ Unlocked: You’re basically a walking comfort spell. (Very OP.) 💜",
+      back: "Back",
+      addMem: "Add a Memory ➕",
+      gameTitle: "Mini Game + Music",
+      gameSub: "🎯 Catch the star! 20 seconds. Click fast. Be the chosen one.",
+      score: "Score",
+      time: "Time",
+      best: "Best",
+      start: "▶ Start",
+      gameHint: "Press Start, then click ⭐. It runs away because it’s shy 😼",
+      musicHint: "Tap Music to start. (Browsers block autoplay)"
+    },
+    mn: {
+      brandTitle: "Төрсөн өдрийн Бэлэг Mode",
+      status: "Theme-ээ сонгоод, кнопоор тоглоод, жаахан тэнэгрээд vibe хий 😌✨",
+      mainTitle: "Төрсөн өдрийн мэнд 💜",
+      mainSub: "Энд чинь “Good Vibes”-ийн Purple Galaxy™.<br/>Cake унах физик + sparkle технологи — хослол нь гоё шүү 😼",
+      openMem: "Дурсамж нээх",
+      moreSpark: "Илүү гялбаа ✨",
+      moodTitle: "Mood хэмжигч",
+      moodSub: "Анхаар: хэт их гялбаа инээмсэглэл үүсгэнэ.",
+      controlsTitle: "Тохиргоо",
+      vol: "Дуу",
+      rainOn: "🎂🎁 Бороо: АСААЛТТАЙ",
+      rainOff: "🎂🎁 Бороо: УНТРААЛТТАЙ",
+      bugNote: "Rain bug fixed: tab солихоор буцаад ирэхэд нэг мөчид бөөнөөрөө асгарахгүй.",
+      memTitle: "Дурсамжийн бүс 🌸",
+      memSub: "Энд дурсамжаа snack шиг нандигнаж хадгална: болгоомжтой, драмтай, хайртайгаар.",
+      m1t: "🌙 Шөнийн vibe",
+      m1d: "Тайван яриа, нойрмог инээд, “бүх юм ок” мэдрэмж.",
+      m2t: "🎮 Тоглоом & инээд",
+      m2d: "Random мөчүүд хүртэл домог болчихдог шүү ✨",
+      m3t: "🎂 Хүслэн",
+      m3d: "Энэ жил чинь дулаахан, азтай, жаахан ид шидтэй байг 💜",
+      puzzleTitle: "🧩 Жижиг таавар (Easy)",
+      puzzleText: "Зөв товчоо дарвал хөөрхөн compliment онгойно. Эсвэл Reveal дарчих 😼",
+      locked: "Түгжээтэй",
+      unlocked: "Нээгдлээ",
+      puzzleMsg: "Сонголтоо хий… эсвэл Reveal-ээр pro шиг яв 😌",
+      reward: "✅ Нээгдлээ: Чи бол алхдаг comfort spell. (OP шүү.) 💜",
+      back: "Буцах",
+      addMem: "Дурсамж нэмэх ➕",
+      gameTitle: "Mini Game + Music",
+      gameSub: "🎯 Одыг барь! 20 секунд. Түргэн дар. Сонгогдсон нэгэн бол 😼",
+      score: "Оноо",
+      time: "Хугацаа",
+      best: "Рекорд",
+      start: "▶ Эхлэх",
+      gameHint: "Start дарчхаад ⭐ дээр дар. Од чинь ичээд зугтаад байдаг 😼",
+      musicHint: "Music дарж асаана. (Autoplay-г browser блоколдог)"
+    },
+    jp: {
+      brandTitle: "誕生日ギフトモード",
+      status: "テーマを選んで、ボタン押して、ちょっとふざけよう ✨",
+      mainTitle: "お誕生日おめでとう 💜",
+      mainSub: "ここは“Good Vibes”のパープル銀河™。<br/>ケーキが降る物理とキラキラ技術をどうぞ 😼",
+      openMem: "思い出を開く",
+      moreSpark: "もっとキラキラ ✨",
+      moodTitle: "ムードメーター",
+      moodSub: "注意：キラキラ多めで笑顔が出ます。",
+      controlsTitle: "コントロール",
+      vol: "音量",
+      rainOn: "🎂🎁 レイン: ON",
+      rainOff: "🎂🎁 レイン: OFF",
+      bugNote: "レイン修正済み：戻ってきても急に大噴火しないよ。",
+      memTitle: "思い出ゾーン 🌸",
+      memSub: "思い出は大事に保管：丁寧に、ドラマチックに、愛で。",
+      m1t: "🌙 深夜の雰囲気",
+      m1d: "静かな会話、眠い笑い、“大丈夫”って感じ。",
+      m2t: "🎮 ゲーム & 笑い",
+      m2d: "何気ない瞬間が伝説になる ✨",
+      m3t: "🎂 誕生日の願い",
+      m3d: "今年があたたかく、幸運で、少し魔法みたいになりますように 💜",
+      puzzleTitle: "🧩 ちいさなパズル（簡単）",
+      puzzleText: "正しいボタンで解除！またはRevealでOK 😼",
+      locked: "ロック中",
+      unlocked: "解除",
+      puzzleMsg: "選んでね… もしくはRevealでOK。",
+      reward: "✅ 解除：あなたは“癒やし魔法”そのもの。強すぎ（OP）💜",
+      back: "戻る",
+      addMem: "思い出を追加 ➕",
+      gameTitle: "ミニゲーム + 音楽",
+      gameSub: "🎯 星をつかまえろ！20秒。早押し。",
+      score: "スコア",
+      time: "時間",
+      best: "ベスト",
+      start: "▶ スタート",
+      gameHint: "Startを押して⭐をクリック。星は恥ずかしがり屋で逃げる 😼",
+      musicHint: "Musicを押して開始（自動再生はブロック）"
     }
-  </script>
+  };
 
+  function setLang(lang){
+    const d = I18N[lang] || I18N.en;
+    $("ui_brandTitle").textContent = d.brandTitle;
+    $("ui_status").textContent = d.status;
+
+    $("ui_mainTitle").textContent = d.mainTitle;
+    $("ui_mainSub").innerHTML = d.mainSub; // contains <br/>
+    $("ui_openMem").textContent = d.openMem;
+    $("ui_moreSpark").textContent = d.moreSpark;
+
+    $("ui_moodTitle").textContent = d.moodTitle;
+    $("ui_moodSub").textContent = d.moodSub;
+
+    $("ui_controlsTitle").textContent = d.controlsTitle;
+    $("ui_volLabel").textContent = d.vol;
+    $("ui_volLabel2").textContent = d.vol;
+
+    $("ui_bugNote").textContent = d.bugNote;
+
+    $("ui_memTitle").textContent = d.memTitle;
+    $("ui_memSub").textContent = d.memSub;
+
+    $("ui_m1t").textContent = d.m1t;
+    $("ui_m1d").textContent = d.m1d;
+    $("ui_m2t").textContent = d.m2t;
+    $("ui_m2d").textContent = d.m2d;
+    $("ui_m3t").textContent = d.m3t;
+    $("ui_m3d").textContent = d.m3d;
+
+    $("ui_puzzleTitle").textContent = d.puzzleTitle;
+    $("ui_puzzleText").textContent = d.puzzleText;
+    $("puzzleMsg").textContent = d.puzzleMsg;
+    $("puzzleReward").textContent = d.reward;
+
+    $("ui_back").textContent = d.back;
+    $("ui_addMem").textContent = d.addMem;
+
+    $("ui_gameTitle").textContent = d.gameTitle;
+    $("ui_gameSub").textContent = d.gameSub;
+    $("ui_score").textContent = d.score;
+    $("ui_time").textContent = d.time;
+    $("ui_best").textContent = d.best;
+    $("ui_start").textContent = d.start;
+    $("gameHint").textContent = d.gameHint;
+    $("musicHint").textContent = d.musicHint;
+
+    // puzzle status
+    $("puzzleStatus").textContent = puzzleSolved ? d.unlocked : d.locked;
+    // rain label
+    $("rainToggle").textContent = rainOn ? d.rainOn : d.rainOff;
+
+    localStorage.setItem("gift_lang_ok", lang);
+  }
+
+  // ---------- themes ----------
+  const themes = {
+    dark:      { bg:"linear-gradient(135deg,#090017,#2b0a57,#5a189a)", aur1:"rgba(255,214,255,.18)", aur2:"rgba(199,125,255,.16)", aur3:"rgba(255,205,118,.10)" },
+    gray:      { bg:"linear-gradient(135deg,#0f0f14,#2b2b35,#59596a)", aur1:"rgba(255,255,255,.14)", aur2:"rgba(180,180,210,.12)", aur3:"rgba(255,205,118,.08)" },
+    nightblue: { bg:"linear-gradient(135deg,#050b1a,#0b2a6f,#1a57b7)", aur1:"rgba(173,216,230,.14)", aur2:"rgba(130,180,255,.14)", aur3:"rgba(255,255,255,.08)" },
+    purple:    { bg:"linear-gradient(135deg,#12001f,#3a0ca3,#7b2cbf)", aur1:"rgba(255,214,255,.18)", aur2:"rgba(199,125,255,.18)", aur3:"rgba(255,205,118,.09)" },
+    blood:     { bg:"linear-gradient(135deg,#120006,#3a0012,#7a001f)", aur1:"rgba(255,120,120,.14)", aur2:"rgba(255,0,90,.12)", aur3:"rgba(255,205,118,.07)" }
+  };
+  function applyTheme(key){
+    const t = themes[key] || themes.dark;
+    document.documentElement.style.setProperty("--bg", t.bg);
+    document.documentElement.style.setProperty("--aur1", t.aur1);
+    document.documentElement.style.setProperty("--aur2", t.aur2);
+    document.documentElement.style.setProperty("--aur3", t.aur3);
+    localStorage.setItem("gift_theme_ok", key);
+  }
+
+  // ---------- screen navigation + scroll ----------
+  const viewport = $("viewport");
+  function showScreen(which){
+    $("mainScreen").classList.toggle("active", which === "main");
+    $("memoryScreen").classList.toggle("active", which === "mem");
+    viewport.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  // ---------- stars canvas ----------
+  const canvas = $("starCanvas");
+  const ctx = canvas.getContext("2d", { alpha:true });
+  let W=0,H=0,stars=[];
+  function resize(){
+    W = canvas.width = window.innerWidth * devicePixelRatio;
+    H = canvas.height = window.innerHeight * devicePixelRatio;
+    canvas.style.width = window.innerWidth + "px";
+    canvas.style.height = window.innerHeight + "px";
+    const count = Math.floor((window.innerWidth * window.innerHeight) / 8200);
+    stars = Array.from({length: count}, () => ({
+      x: Math.random()*W,
+      y: Math.random()*H,
+      r: (Math.random()*1.3 + 0.55) * devicePixelRatio,
+      a: Math.random()*0.6 + 0.2,
+      tw: Math.random()*0.03 + 0.008,
+      sp: (Math.random()*0.20 + 0.06) * devicePixelRatio
+    }));
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  let mouseX=0, mouseY=0;
+  window.addEventListener("mousemove", (e)=>{
+    mouseX = (e.clientX / window.innerWidth - 0.5);
+    mouseY = (e.clientY / window.innerHeight - 0.5);
+  });
+
+  function drawStars(){
+    ctx.clearRect(0,0,W,H);
+    const px = mouseX * 24 * devicePixelRatio;
+    const py = mouseY * 24 * devicePixelRatio;
+    for(const s of stars){
+      s.a += (Math.random() - 0.5) * s.tw;
+      s.a = Math.max(0.12, Math.min(0.88, s.a));
+      s.y += s.sp * 0.16;
+      if(s.y > H+12) s.y = -12;
+      ctx.globalAlpha = s.a;
+      ctx.beginPath();
+      ctx.arc(s.x + px, s.y + py, s.r, 0, Math.PI*2);
+      ctx.fillStyle = "white";
+      ctx.fill();
+    }
+    requestAnimationFrame(drawStars);
+  }
+  drawStars();
+
+  // ---------- rain (fixed) ----------
+  const rain = $("rain");
+  const emojis = ["🎂","🎁","🍰","🎉","💜","✨","🧁"];
+  let rainOn = true;
+
+  function spawnDrop(boost=false){
+    if(!rainOn) return;
+    const el = document.createElement("div");
+    el.className = "drop";
+    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    const left = Math.random()*100;
+    const size = (Math.random()*16 + (boost ? 22 : 14));
+    const dur = (Math.random()*2.6 + (boost ? 3.0 : 3.7));
+    const dx = ((Math.random()*90)-45) + "px";
+    const rot = ((Math.random()*280)-140) + "deg";
+    el.style.left = left + "vw";
+    el.style.fontSize = size + "px";
+    el.style.animationDuration = dur + "s";
+    el.style.setProperty("--dx", dx);
+    el.style.setProperty("--rot", rot);
+    rain.appendChild(el);
+    el.addEventListener("animationend", ()=> el.remove());
+  }
+
+  let lastT = performance.now();
+  let acc = 0;
+  const rate = 6.5;
+  function rainLoop(now){
+    const dt = Math.min(0.05, (now - lastT)/1000); // cap prevents catch-up burst
+    lastT = now;
+
+    if(!document.hidden && rainOn){
+      acc += dt * rate;
+      const n = Math.min(3, Math.floor(acc)); // cap per frame
+      if(n>0){
+        for(let i=0;i<n;i++) spawnDrop(false);
+        acc -= n;
+      }
+    } else {
+      acc = 0;
+    }
+    requestAnimationFrame(rainLoop);
+  }
+  requestAnimationFrame(rainLoop);
+  document.addEventListener("visibilitychange", ()=>{
+    lastT = performance.now();
+    acc = 0;
+  });
+
+  // ---------- sparkles + mood meter ----------
+  let mood = 0;
+  function updateMeter(){
+    $("meterBar").style.width = mood + "%";
+    $("meterLabel").textContent = mood + "%";
+  }
+  function sparkleBurst(){
+    mood = Math.min(100, mood + 12);
+    updateMeter();
+    for(let i=0;i<18;i++) setTimeout(()=>spawnDrop(true), i*25);
+  }
+
+  // ---------- puzzle ----------
+  let puzzleSolved = (localStorage.getItem("puzzleSolved_ok") === "yes");
+  function renderPuzzle(){
+    const lang = $("langSelect").value;
+    const d = I18N[lang] || I18N.en;
+    $("puzzleStatus").textContent = puzzleSolved ? d.unlocked : d.locked;
+    $("puzzleReward").style.display = puzzleSolved ? "block" : "none";
+  }
+  function solvePuzzle(){
+    puzzleSolved = true;
+    localStorage.setItem("puzzleSolved_ok","yes");
+    renderPuzzle();
+    sparkleBurst();
+  }
+
+  // ---------- mini game ----------
+  const gameArea = $("gameArea");
+  const target = $("target");
+  let score = 0;
+  let timeLeft = 20;
+  let timer = null;
+  let playing = false;
+  let best = Number(localStorage.getItem("bestScore_ok") || 0);
+  $("best").textContent = best;
+
+  function placeTarget(){
+    const pad = 18;
+    const w = gameArea.clientWidth;
+    const h = gameArea.clientHeight;
+    const x = pad + Math.random()*(w - pad*2);
+    const y = pad + Math.random()*(h - pad*2);
+    target.style.left = x + "px";
+    target.style.top = y + "px";
+  }
+  function startGame(){
+    if(playing) return;
+    playing = true;
+    score = 0; timeLeft = 20;
+    $("score").textContent = score;
+    $("time").textContent = timeLeft;
+    placeTarget();
+    clearInterval(timer);
+    timer = setInterval(()=>{
+      timeLeft--;
+      $("time").textContent = timeLeft;
+      if(timeLeft<=0){
+        clearInterval(timer);
+        timer = null;
+        playing = false;
+        if(score > best){
+          best = score;
+          $("best").textContent = best;
+          localStorage.setItem("bestScore_ok", String(best));
+          sparkleBurst();
+        }
+      }
+    }, 1000);
+  }
+
+  // ---------- music (generated) ----------
+  let audioCtx=null, master=null, isPlaying=false;
+  function ensureAudio(){
+    if(audioCtx) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    master = audioCtx.createGain();
+    master.gain.value = 0.35;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 900;
+    filter.Q.value = 0.7;
+
+    const noiseBuf = audioCtx.createBuffer(1, audioCtx.sampleRate*2, audioCtx.sampleRate);
+    const data = noiseBuf.getChannelData(0);
+    for(let i=0;i<data.length;i++) data[i] = (Math.random()*2-1)*0.22;
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = noiseBuf; noise.loop = true;
+    const noiseGain = audioCtx.createGain();
+    noiseGain.gain.value = 0.04;
+    noise.connect(noiseGain);
+    noiseGain.connect(filter);
+
+    const lfo = audioCtx.createOscillator();
+    lfo.type = "sine"; lfo.frequency.value = 0.07;
+    const lfoGain = audioCtx.createGain();
+    lfoGain.gain.value = 240;
+    lfo.connect(lfoGain);
+    lfoGain.connect(filter.frequency);
+
+    const delay = audioCtx.createDelay();
+    delay.delayTime.value = 0.22;
+    const fb = audioCtx.createGain();
+    fb.gain.value = 0.25;
+    delay.connect(fb); fb.connect(delay);
+
+    const mix = audioCtx.createGain();
+    mix.gain.value = 0.9;
+
+    filter.connect(delay);
+    filter.connect(mix);
+    delay.connect(mix);
+
+    mix.connect(master);
+    master.connect(audioCtx.destination);
+
+    noise.start();
+    lfo.start();
+
+    const chords = [
+      [261.63, 329.63, 392.00],
+      [293.66, 369.99, 440.00],
+      [220.00, 277.18, 329.63],
+      [246.94, 311.13, 369.99],
+    ];
+    let chordIndex=0;
+    function playChord(){
+      if(!isPlaying) return;
+      const now = audioCtx.currentTime;
+      const chord = chords[chordIndex % chords.length];
+      chordIndex++;
+      chord.forEach((freq, idx)=>{
+        const osc = audioCtx.createOscillator();
+        osc.type = (idx===0 ? "triangle" : "sine");
+        osc.frequency.value = freq;
+
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(0.0001, now);
+        g.gain.exponentialRampToValueAtTime(0.12, now + 0.25);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + 3.4);
+
+        osc.connect(g);
+        g.connect(filter);
+
+        osc.start(now);
+        osc.stop(now + 3.6);
+      });
+      setTimeout(playChord, 3800);
+    }
+    audioCtx._startPad = ()=>{ chordIndex=0; playChord(); };
+  }
+  function setVolume(v){ if(master) master.gain.value = Math.max(0, Math.min(1, v)); }
+  function syncVol(value){
+    $("vol").value = value;
+    $("vol2").value = value;
+    setVolume(value/100);
+  }
+  function updateMusicButtons(){
+    const txt = isPlaying ? "🎧 Music: ON" : "🎧 Music: OFF";
+    $("musicToggle").textContent = txt;
+    $("musicToggle2").textContent = txt;
+  }
+  function toggleMusic(){
+    ensureAudio();
+    if(audioCtx.state === "suspended") audioCtx.resume();
+    isPlaying = !isPlaying;
+    if(isPlaying) audioCtx._startPad();
+    updateMusicButtons();
+  }
+
+  // ---------- wire up buttons (THIS was the broken part before) ----------
+  $("openBtn").addEventListener("click", ()=>{ showScreen("mem"); sparkleBurst(); });
+  $("backBtn").addEventListener("click", ()=>{ showScreen("main"); sparkleBurst(); });
+
+  $("sparkBtn").addEventListener("click", sparkleBurst);
+
+  $("p1").addEventListener("click", ()=>{ $("puzzleMsg").textContent = "Nope 😼 the potato is innocent."; sparkleBurst(); });
+  $("p3").addEventListener("click", ()=>{ $("puzzleMsg").textContent = "Cute dino… but not today 🦖😼"; sparkleBurst(); });
+  $("p2").addEventListener("click", ()=>{ $("puzzleMsg").textContent = "YES 😌 purple supremacy."; solvePuzzle(); });
+  $("pReveal").addEventListener("click", ()=>{ $("puzzleMsg").textContent = "Okay okay, easy mode activated 😌"; solvePuzzle(); });
+
+  $("addMemBtn").addEventListener("click", ()=>{
+    const title = prompt("Title?");
+    if(!title) return;
+    const desc = prompt("Memory text?");
+    if(!desc) return;
+    const box = document.createElement("div");
+    box.className = "mem";
+    box.innerHTML = `<b>💜 ${escapeHtml(title)}</b><p>${escapeHtml(desc)}</p>`;
+    $("memList").prepend(box);
+    sparkleBurst();
+  });
+
+  $("startGame").addEventListener("click", ()=>{ startGame(); sparkleBurst(); });
+  target.addEventListener("click", ()=>{
+    if(!playing) return;
+    score++;
+    $("score").textContent = score;
+    target.style.transform = "translate(-50%,-50%) scale(1.12)";
+    setTimeout(()=> target.style.transform = "translate(-50%,-50%)", 70);
+    placeTarget();
+  });
+
+  $("musicToggle").addEventListener("click", toggleMusic);
+  $("musicToggle2").addEventListener("click", toggleMusic);
+  $("vol").addEventListener("input", e=> syncVol(e.target.value));
+  $("vol2").addEventListener("input", e=> syncVol(e.target.value));
+
+  $("rainToggle").addEventListener("click", ()=>{
+    rainOn = !rainOn;
+    acc = 0; lastT = performance.now();
+    // update label via language dict
+    const d = I18N[$("langSelect").value] || I18N.en;
+    $("rainToggle").textContent = rainOn ? d.rainOn : d.rainOff;
+  });
+
+  $("themeSelect").addEventListener("change", e=> applyTheme(e.target.value));
+  $("modeToggle").addEventListener("click", ()=>{
+    const isLight = !document.body.classList.contains("light");
+    document.body.classList.toggle("light", isLight);
+    $("modeToggle").textContent = isLight ? "☀️ Light" : "🌙 Dark";
+    localStorage.setItem("gift_mode_ok", isLight ? "light" : "dark");
+  });
+
+  $("langSelect").addEventListener("change", e=> setLang(e.target.value));
+
+  function escapeHtml(s){
+    return (s+"").replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+
+  // ---------- restore saved settings ----------
+  const savedTheme = localStorage.getItem("gift_theme_ok") || "dark";
+  $("themeSelect").value = savedTheme;
+  applyTheme(savedTheme);
+
+  const savedMode = localStorage.getItem("gift_mode_ok") || "dark";
+  document.body.classList.toggle("light", savedMode === "light");
+  $("modeToggle").textContent = (savedMode === "light") ? "☀️ Light" : "🌙 Dark";
+
+  const savedLang = localStorage.getItem("gift_lang_ok") || "mn";
+  $("langSelect").value = savedLang;
+
+  renderPuzzle();
+  syncVol(35);
+  setLang(savedLang);
+
+  // initial vibe
+  setTimeout(()=> sparkleBurst(), 650);
+})();
+</script>
 </body>
 </html>
