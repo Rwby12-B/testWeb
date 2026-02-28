@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday Multi-Screen</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins', sans-serif; }
+    body { height:100vh; overflow:hidden; background: linear-gradient(135deg, #0a0014, #140024, #1f0033, #2a0044); color:white; position: relative; }
+
+    .screen { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; transition: opacity 1s ease; }
+    .screen.hidden { opacity:0; pointer-events:none; }
+
+    .card { padding:40px 60px; border-radius:25px; background: rgba(255,255,255,0.06); backdrop-filter: blur(25px); border:1px solid rgba(255,255,255,0.12); box-shadow:0 10px 50px rgba(0,0,0,0.6); text-align:center; }
+    h1 { font-size:3rem; font-weight:600; margin-bottom:10px; background: linear-gradient(90deg, #d8b4fe, #f5d0fe); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    p { font-weight:300; font-size:1.2rem; opacity:0.85; }
+    .button { margin-top:25px; padding:12px 30px; border-radius:50px; border:none; background:linear-gradient(90deg,#c084fc,#e879f9); color:white; font-weight:600; cursor:pointer; transition: all 0.3s ease; }
+    .button:hover { transform: scale(1.08); box-shadow:0 0 25px rgba(216,180,254,0.6); }
+
+    /* snow */
+    .snow { position:fixed; color:white; user-select:none; pointer-events:none; animation-name: snowfall; animation-timing-function: linear; animation-iteration-count: infinite; }
+    @keyframes snowfall { from { transform: translateY(-10vh) rotate(0deg); opacity:0; } 10% { opacity:1; } to { transform: translateY(110vh) rotate(360deg); opacity:0; } }
+
+    .memory { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+    .memory h2 { font-size:2.5rem; margin-bottom:15px; }
+    .memory img { width:200px; border-radius:15px; margin:10px; transition: transform 0.3s ease; }
+    .memory img:hover { transform: scale(1.1); }
+  </style>
+</head>
+<body>
+
+  <div class="screen" id="mainScreen">
+    <div class="card">
+      <h1>Happy Birthday</h1>
+      <p>Wishing you all the best!</p>
+      <button class="button" onclick="goToMemory()">Open Gift</button>
+    </div>
+  </div>
+
+  <div class="screen hidden" id="memoryScreen">
+    <div class="memory">
+      <h2>Memories</h2>
+      <div>
+        <img src="https://via.placeholder.com/200x150.png?text=Memory+1" alt="Memory1">
+        <img src="https://via.placeholder.com/200x150.png?text=Memory+2" alt="Memory2">
+        <img src="https://via.placeholder.com/200x150.png?text=Memory+3" alt="Memory3">
+      </div>
+      <p>Remember all our amazing moments together! 💖</p>
+    </div>
+  </div>
+
+  <script>
+    // snow + cakes
+    const items = ["❄", "❄", "❄", "🎂", "🧁"];
+    for (let i=0;i<60;i++){
+      const snow=document.createElement('div');
+      snow.className='snow';
+      snow.innerHTML=items[Math.floor(Math.random()*items.length)];
+      snow.style.left=Math.random()*100+'vw';
+      snow.style.top='-10vh';
+      snow.style.fontSize=(Math.random()*20+10)+'px';
+      snow.style.animationDuration=(Math.random()*10+10)+'s';
+      snow.style.animationDelay=Math.random()*5+'s';
+      document.body.appendChild(snow);
+    }
+
+    function goToMemory(){
+      document.getElementById('mainScreen').classList.add('hidden');
+      document.getElementById('memoryScreen').classList.remove('hidden');
+    }
+  </script>
+
+</body>
+</html>
