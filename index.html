@@ -732,12 +732,41 @@
 
   // ---------- themes ----------
   const themes = {
-    dark:      { bg:"linear-gradient(135deg,#090017,#2b0a57,#5a189a)", aur1:"rgba(255,214,255,.18)", aur2:"rgba(199,125,255,.16)", aur3:"rgba(255,205,118,.10)" },
-    gray:      { bg:"linear-gradient(135deg,#0f0f14,#2b2b35,#59596a)", aur1:"rgba(255,255,255,.14)", aur2:"rgba(180,180,210,.12)", aur3:"rgba(255,205,118,.08)" },
-    nightblue: { bg:"linear-gradient(135deg,#050b1a,#0b2a6f,#1a57b7)", aur1:"rgba(173,216,230,.14)", aur2:"rgba(130,180,255,.14)", aur3:"rgba(255,255,255,.08)" },
-    purple:    { bg:"linear-gradient(135deg,#12001f,#3a0ca3,#7b2cbf)", aur1:"rgba(255,214,255,.18)", aur2:"rgba(199,125,255,.18)", aur3:"rgba(255,205,118,.09)" },
-    blood:     { bg:"linear-gradient(135deg,#120006,#3a0012,#7a001f)", aur1:"rgba(255,120,120,.14)", aur2:"rgba(255,0,90,.12)", aur3:"rgba(255,205,118,.07)" }
-  };
+  dark: {
+    bg: "linear-gradient(135deg, #050505, #0d0f1a, #141829)",
+    aur1: "rgba(180,200,255,.08)",
+    aur2: "rgba(120,150,255,.06)",
+    aur3: "rgba(255,255,255,.04)"
+  },
+
+  gray: {
+    bg: "linear-gradient(135deg, #111111, #2a2a2a, #3f3f3f)",
+    aur1: "rgba(255,255,255,.06)",
+    aur2: "rgba(200,200,200,.05)",
+    aur3: "rgba(255,255,255,.04)"
+  },
+
+  nightblue: {
+    bg: "linear-gradient(135deg, #030814, #0b1f3a, #123a73)",
+    aur1: "rgba(120,180,255,.12)",
+    aur2: "rgba(90,150,255,.10)",
+    aur3: "rgba(255,255,255,.05)"
+  },
+
+  purple: {  /* Dark Purple */
+    bg: "linear-gradient(135deg, #14001f, #2b0050, #3f007a)",
+    aur1: "rgba(199,125,255,.15)",
+    aur2: "rgba(160,90,255,.12)",
+    aur3: "rgba(255,205,118,.06)"
+  },
+
+  blood: {
+    bg: "linear-gradient(135deg, #120000, #3a0008, #5c0014)",
+    aur1: "rgba(255,60,60,.12)",
+    aur2: "rgba(200,0,40,.10)",
+    aur3: "rgba(255,180,180,.05)"
+  }
+};
   function applyTheme(key){
     const t = themes[key] || themes.dark;
     document.documentElement.style.setProperty("--bg", t.bg);
