@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "author": "Болд Д.",
+    "avatar": "Б",
+    "rating": 5,
+    "date": "2024-11-15",
+    "text": "Nice view, food, atmosphere and service. The steak was cooked to perfection and the staff were incredibly attentive. Will definitely be coming back!",
+    "verified": true
+  },
+  {
+    "id": 2,
+    "author": "Сарнай М.",
+    "avatar": "С",
+    "rating": 5,
+    "date": "2024-10-22",
+    "text": "Beautiful modern building with rooftop terrace. Sunset views while dining made the experience truly magical. The Khuushuur was the best I've ever tasted.",
+    "verified": true
+  },
+  {
+    "id": 3,
+    "author": "Тэмүүжин Б.",
+    "avatar": "Т",
+    "rating": 4,
+    "date": "2024-09-08",
+    "text": "Food was very tasty and service was excellent. The traditional Mongolian dishes are authentic and the modern presentation is impressive. Highly recommend!",
+    "verified": true
+  },
+  {
+    "id": 4,
+    "author": "Мөнхзул О.",
+    "avatar": "М",
+    "rating": 5,
+    "date": "2024-08-30",
+    "text": "Гайхалтай орчин, амтлаг хоол. Цуйван нь үнэхээр онцгой байлаа. Найз нөхөд, гэр бүлтэйгээ ирэхэд тохиромжтой газар.",
+    "verified": true
+  },
+  {
+    "id": 5,
+    "author": "Анхбаяр Г.",
+    "avatar": "А",
+    "rating": 4,
+    "date": "2024-07-18",
+    "text": "Great family restaurant with authentic Mongolian cuisine. The atmosphere is warm and welcoming. Service could be a touch faster during peak hours but overall excellent.",
+    "verified": false
+  }
+]
