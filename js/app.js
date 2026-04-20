@@ -2,7 +2,7 @@
    ТОХЬ РЕСТОРАН — Frontend App JS
    ───────────────────────────────────────── */
 
-const API = ''; // Same origin — relative paths
+const API = 'https://testweb-7eph.onrender.com'; // Same origin — relative paths
 
 /* ── EMOJI MAP for menu items ── */
 const MENU_EMOJIS = {
